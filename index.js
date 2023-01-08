@@ -17,17 +17,24 @@ var con = mysql.createConnection({
 });
 
 con.connect(function (error) {
-    if(error) {
+    if (error) {
         console.log('Database connection faild');
     }
-    else{
+    else {
         console.log("Connected!");
-        
+
+        app.get('/api/v1/longest-duration-movies', (req, res) => {
+            const longestDurationMovies = "SELECT tconst, primaryTitle, runtimeMinutes, genres FROM movies ORDER BY (runtimeMinutes) DESC LIMIT 5";
+
+            con.query(longestDurationMovies, function (err, result) {
+                if (err) throw err;
+                res.send(result);
+            });
+
+        });
+
     }
-    // con.query("CREATE DATABASE mydb", function (err, result) {
-    //     if (err) throw err;
-    //     console.log("Database created");
-    // });
+
 });
 
 
