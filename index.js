@@ -9,7 +9,7 @@ app.use(cors());
 app.use(express.json());
 
 // Database Connection
-var con = mysql.createConnection({
+const con = mysql.createConnection({
     host: 'localhost',
     user: 'root',
     password: '',
@@ -18,13 +18,12 @@ var con = mysql.createConnection({
 
 con.connect(function (error) {
     if (error) {
-        console.log('Database connection faild');
+        console.log('Database connection faild!!!');
     }
     else {
-        console.log("Connected!");
-
         app.get('/api/v1/longest-duration-movies', (req, res) => {
-            const longestDurationMovies = "SELECT tconst, primaryTitle, runtimeMinutes, genres FROM movies ORDER BY (runtimeMinutes) DESC LIMIT 5";
+
+            const longestDurationMovies = "SELECT tconst, primaryTitle, runtimeMinutes, genres FROM movies ORDER BY (runtimeMinutes) DESC LIMIT 10";
 
             con.query(longestDurationMovies, function (err, result) {
                 if (err) throw err;
@@ -33,10 +32,32 @@ con.connect(function (error) {
 
         });
 
+        app.post('/api/v1/new-movie', (req, res) => {
+
+            const newMovie = req.body;
+
+            const newMovieSQL = "INSERT INTO movies SET?"
+
+            con.query(newMovieSQL, newMovie, function (err, results) {
+                if (err) throw err;
+                res.send(results);
+            });
+
+        });
+
+        app.get('/api/v1/top-rated-movies', (req, res) => {
+            
+            const topRatedMoviesSQL = "SELECT movies.tconst, movies.primaryTitle, movies.genres, ratings.averageRating FROM movies, ratings WHERE ratings.averageRating > 6.0 AND movies.tconst = ratings.tconst";
+
+            con.query(topRatedMoviesSQL, function (err, result) {
+                if (err) throw err;
+                res.send(result);
+            });
+
+        });
     }
 
 });
-
 
 app.get('/', (req, res) => {
     res.send('Coding Task server is running');
